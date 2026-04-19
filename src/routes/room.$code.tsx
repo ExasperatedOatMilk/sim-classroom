@@ -62,7 +62,7 @@ function StudentRoom() {
           .select("assigned_plan, correct_value")
           .eq("participant_id", participantId)
           .maybeSingle();
-        if (!cancelled && a) setAssignment(a as Assignment);
+        if (!cancelled && a) setAssignment({ assigned_plan: a.assigned_plan as unknown as LifePlan, correct_value: a.correct_value ?? 0 });
       }
     })();
     return () => {
@@ -93,7 +93,7 @@ function StudentRoom() {
             .select("assigned_plan, correct_value")
             .eq("participant_id", participantId)
             .maybeSingle();
-          if (a) setAssignment(a as Assignment);
+          if (a) setAssignment({ assigned_plan: a.assigned_plan as unknown as LifePlan, correct_value: a.correct_value ?? 0 });
         }
       )
       .subscribe();

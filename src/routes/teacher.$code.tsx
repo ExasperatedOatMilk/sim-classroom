@@ -149,10 +149,17 @@ function TeacherDashboard() {
         return;
       }
       const assignments = buildAssignments(answers);
-      const rows = assignments.map((a) => ({
+      type AssignmentInsert = {
+        participant_id: string;
+        room_id: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        assigned_plan: any;
+        correct_value: number;
+      };
+      const rows: AssignmentInsert[] = assignments.map((a) => ({
         participant_id: a.participantId,
         room_id: roomId,
-        assigned_plan: a.plan as unknown as Record<string, unknown>,
+        assigned_plan: a.plan,
         correct_value: computePlan(a.plan),
       }));
       // Wipe & insert (in case re-shuffled)

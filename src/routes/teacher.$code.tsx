@@ -85,7 +85,7 @@ function TeacherDashboard() {
         (payload) => {
           const row = payload.new as { phase?: number };
           if (typeof row.phase === "number") setPhase(row.phase);
-        }
+        },
       )
       .on(
         "postgres_changes",
@@ -96,7 +96,7 @@ function TeacherDashboard() {
             .select("id, name, role")
             .eq("room_id", roomId);
           setParticipants((data ?? []) as Participant[]);
-        }
+        },
       )
       .on(
         "postgres_changes",
@@ -107,7 +107,7 @@ function TeacherDashboard() {
             .select("participant_id, phase, answer")
             .eq("room_id", roomId);
           setResponses((data ?? []) as ResponseRow[]);
-        }
+        },
       )
       .subscribe();
     return () => {
@@ -121,7 +121,10 @@ function TeacherDashboard() {
     if (!roomId) return;
     setWorking(true);
     const status = toPhase >= PHASES.FINISHED ? "finished" : toPhase === 0 ? "waiting" : "active";
-    const { error } = await supabase.from("rooms").update({ phase: toPhase, status }).eq("id", roomId);
+    const { error } = await supabase
+      .from("rooms")
+      .update({ phase: toPhase, status })
+      .eq("id", roomId);
     setWorking(false);
     if (error) toast.error("Could not advance");
   };
@@ -198,7 +201,10 @@ function TeacherDashboard() {
             {field.label}
           </h3>
           {field.type === "number" ? (
-            <NumericHistogram values={values.filter((v): v is number => typeof v === "number")} suffix={field.suffix} />
+            <NumericHistogram
+              values={values.filter((v): v is number => typeof v === "number")}
+              suffix={field.suffix}
+            />
           ) : (
             <TextFrequency values={values.filter((v): v is string => typeof v === "string")} />
           )}
@@ -211,34 +217,96 @@ function TeacherDashboard() {
   const renderControls = () => {
     if (phase === PHASES.LOBBY) {
       return (
-        <Button variant="hero" size="lg" onClick={() => advance(PHASES.PHASE_1)} disabled={working || students.length === 0}>
+        <Button
+          variant="hero"
+          size="lg"
+          onClick={() => advance(PHASES.PHASE_1)}
+          disabled={working || students.length === 0}
+        >
           Start simulation →
         </Button>
       );
     }
     if (phase === PHASES.PHASE_1) {
-      return <Button variant="hero" size="lg" onClick={() => advance(PHASES.PHASE_1_RESULTS)} disabled={working}>Show class results</Button>;
+      return (
+        <Button
+          variant="hero"
+          size="lg"
+          onClick={() => advance(PHASES.PHASE_1_RESULTS)}
+          disabled={working}
+        >
+          Show class results
+        </Button>
+      );
     }
     if (phase === PHASES.PHASE_1_RESULTS) {
-      return <Button variant="hero" size="lg" onClick={() => advance(PHASES.PHASE_2)} disabled={working}>Continue to Phase 2</Button>;
+      return (
+        <Button variant="hero" size="lg" onClick={() => advance(PHASES.PHASE_2)} disabled={working}>
+          Continue to Phase 2
+        </Button>
+      );
     }
     if (phase === PHASES.PHASE_2) {
-      return <Button variant="hero" size="lg" onClick={() => advance(PHASES.PHASE_2_RESULTS)} disabled={working}>Show class results</Button>;
+      return (
+        <Button
+          variant="hero"
+          size="lg"
+          onClick={() => advance(PHASES.PHASE_2_RESULTS)}
+          disabled={working}
+        >
+          Show class results
+        </Button>
+      );
     }
     if (phase === PHASES.PHASE_2_RESULTS) {
-      return <Button variant="hero" size="lg" onClick={() => advance(PHASES.PHASE_3)} disabled={working}>Continue to Phase 3</Button>;
+      return (
+        <Button variant="hero" size="lg" onClick={() => advance(PHASES.PHASE_3)} disabled={working}>
+          Continue to Phase 3
+        </Button>
+      );
     }
     if (phase === PHASES.PHASE_3) {
-      return <Button variant="hero" size="lg" onClick={() => advance(PHASES.PHASE_3_RESULTS)} disabled={working}>Show class results</Button>;
+      return (
+        <Button
+          variant="hero"
+          size="lg"
+          onClick={() => advance(PHASES.PHASE_3_RESULTS)}
+          disabled={working}
+        >
+          Show class results
+        </Button>
+      );
     }
     if (phase === PHASES.PHASE_3_RESULTS) {
-      return <Button variant="warm" size="lg" onClick={buildAndAssign} disabled={working}>🎲 Shuffle & assign life plans</Button>;
+      return (
+        <Button variant="warm" size="lg" onClick={buildAndAssign} disabled={working}>
+          🎲 Shuffle & assign life plans
+        </Button>
+      );
     }
     if (phase === PHASES.ASSIGNMENT) {
-      return <Button variant="hero" size="lg" onClick={() => advance(PHASES.CALCULATION)} disabled={working}>Begin calculation phase</Button>;
+      return (
+        <Button
+          variant="hero"
+          size="lg"
+          onClick={() => advance(PHASES.CALCULATION)}
+          disabled={working}
+        >
+          Begin calculation phase
+        </Button>
+      );
     }
     if (phase === PHASES.CALCULATION) {
-      return <Button variant="success" size="lg" onClick={() => advance(PHASES.FINISHED)} disabled={working}>Finish & reveal class</Button>;
+      return (
+        <Button
+          variant="success"
+          size="lg"
+          onClick={() => advance(PHASES.FINISHED)}
+          disabled={working}
+        >
+          Finish & reveal class
+        </Button>
+      );
     }
     return (
       <Button variant="outline" size="lg" onClick={() => advance(PHASES.LOBBY)} disabled={working}>
@@ -254,7 +322,9 @@ function TeacherDashboard() {
     <main className="mx-auto min-h-screen max-w-6xl px-4 py-8">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Home</Link>
+          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
+            ← Home
+          </Link>
           <PhaseBadge phase={phase} />
         </div>
         <div className="flex items-center gap-3">
@@ -275,7 +345,9 @@ function TeacherDashboard() {
           <Card className="p-6">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold">Teacher controls</h2>
-              <span className="text-sm text-muted-foreground">{students.length} student{students.length === 1 ? "" : "s"}</span>
+              <span className="text-sm text-muted-foreground">
+                {students.length} student{students.length === 1 ? "" : "s"}
+              </span>
             </div>
             <div className="flex flex-wrap items-center gap-3">{renderControls()}</div>
           </Card>
@@ -296,7 +368,9 @@ function TeacherDashboard() {
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
                 {students.map((s) => {
-                  const done = responses.some((r) => r.participant_id === s.id && r.phase === inputP);
+                  const done = responses.some(
+                    (r) => r.participant_id === s.id && r.phase === inputP,
+                  );
                   return (
                     <span
                       key={s.id}
@@ -306,7 +380,8 @@ function TeacherDashboard() {
                           : "bg-muted text-muted-foreground ring-border"
                       }`}
                     >
-                      {done ? "✓ " : ""}{s.name}
+                      {done ? "✓ " : ""}
+                      {s.name}
                     </span>
                   );
                 })}
@@ -314,7 +389,8 @@ function TeacherDashboard() {
             </Card>
           )}
 
-          {meta?.kind === "results" && renderResults((phase === 2 ? 1 : phase === 4 ? 3 : 5) as 1 | 3 | 5)}
+          {meta?.kind === "results" &&
+            renderResults((phase === 2 ? 1 : phase === 4 ? 3 : 5) as 1 | 3 | 5)}
 
           {phase === PHASES.ASSIGNMENT && (
             <Card className="p-6">
@@ -372,13 +448,18 @@ function CalculationLeaderboard({
   const [subs, setSubs] = useState<
     { participant_id: string; user_value: number; is_correct: boolean; attempts: number }[]
   >([]);
-  const [assignments, setAssignments] = useState<{ participant_id: string; correct_value: number }[]>([]);
+  const [assignments, setAssignments] = useState<
+    { participant_id: string; correct_value: number }[]
+  >([]);
 
   useEffect(() => {
     if (!roomId) return;
     const refresh = async () => {
       const [{ data: s }, { data: a }] = await Promise.all([
-        supabase.from("final_submissions").select("participant_id, user_value, is_correct, attempts").eq("room_id", roomId),
+        supabase
+          .from("final_submissions")
+          .select("participant_id, user_value, is_correct, attempts")
+          .eq("room_id", roomId),
         supabase.from("assignments").select("participant_id, correct_value").eq("room_id", roomId),
       ]);
       setSubs((s ?? []) as typeof subs);
@@ -389,8 +470,13 @@ function CalculationLeaderboard({
       .channel(`teacher-final-${roomId}`)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "final_submissions", filter: `room_id=eq.${roomId}` },
-        refresh
+        {
+          event: "*",
+          schema: "public",
+          table: "final_submissions",
+          filter: `room_id=eq.${roomId}`,
+        },
+        refresh,
       )
       .subscribe();
     return () => {
@@ -400,7 +486,9 @@ function CalculationLeaderboard({
 
   return (
     <Card className="p-6">
-      <h2 className="mb-4 text-lg font-semibold">{reveal ? "Final results" : "Live calculation progress"}</h2>
+      <h2 className="mb-4 text-lg font-semibold">
+        {reveal ? "Final results" : "Live calculation progress"}
+      </h2>
       <ul className="space-y-2">
         {students.map((s) => {
           const sub = subs.find((x) => x.participant_id === s.id);
@@ -422,7 +510,9 @@ function CalculationLeaderboard({
                     ✓ correct
                   </span>
                 ) : sub ? (
-                  <span className="text-sm text-muted-foreground">{formatCurrency(sub.user_value)}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {formatCurrency(sub.user_value)}
+                  </span>
                 ) : (
                   <span className="text-xs text-muted-foreground">…working</span>
                 )}

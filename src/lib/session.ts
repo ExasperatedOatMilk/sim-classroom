@@ -33,7 +33,7 @@ function write(s: SessionState) {
 
 export function setRoomSession(
   code: string,
-  data: { participantId: string; name: string; role: "teacher" | "student" }
+  data: { participantId: string; name: string; role: "teacher" | "student" },
 ) {
   const s = read();
   s.rooms[code] = data;

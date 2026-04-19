@@ -185,14 +185,28 @@
 }
 
 @keyframes float-slow {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 oklch(0.62 0.16 195 / 0.4); }
-  50% { box-shadow: 0 0 0 12px oklch(0.62 0.16 195 / 0); }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 oklch(0.62 0.16 195 / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px oklch(0.62 0.16 195 / 0);
+  }
 }
 
-.animate-float { animation: float-slow 4s ease-in-out infinite; }
-.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+.animate-float {
+  animation: float-slow 4s ease-in-out infinite;
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}

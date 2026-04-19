@@ -61,7 +61,11 @@ export function PhaseForm({ fields, initial, submitting, submitted, onSubmit }: 
         className="w-full"
         disabled={submitted || submitting}
       >
-        {submitted ? "✓ Submitted — waiting for class" : submitting ? "Submitting…" : "Submit answer"}
+        {submitted
+          ? "✓ Submitted — waiting for class"
+          : submitting
+            ? "Submitting…"
+            : "Submit answer"}
       </Button>
     </form>
   );

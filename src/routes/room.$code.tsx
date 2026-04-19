@@ -47,7 +47,11 @@ function StudentRoom() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data: room } = await supabase.from("rooms").select("id, phase").eq("code", code).maybeSingle();
+      const { data: room } = await supabase
+        .from("rooms")
+        .select("id, phase")
+        .eq("code", code)
+        .maybeSingle();
       if (!room || cancelled) return;
       setRoomId(room.id);
       setPhase(room.phase);
@@ -62,7 +66,11 @@ function StudentRoom() {
           .select("assigned_plan, correct_value")
           .eq("participant_id", participantId)
           .maybeSingle();
-        if (!cancelled && a) setAssignment({ assigned_plan: a.assigned_plan as unknown as LifePlan, correct_value: a.correct_value ?? 0 });
+        if (!cancelled && a)
+          setAssignment({
+            assigned_plan: a.assigned_plan as unknown as LifePlan,
+            correct_value: a.correct_value ?? 0,
+          });
       }
     })();
     return () => {
@@ -81,7 +89,7 @@ function StudentRoom() {
         (payload) => {
           const row = payload.new as { phase?: number };
           if (typeof row.phase === "number") setPhase(row.phase);
-        }
+        },
       )
       .on(
         "postgres_changes",
@@ -93,8 +101,12 @@ function StudentRoom() {
             .select("assigned_plan, correct_value")
             .eq("participant_id", participantId)
             .maybeSingle();
-          if (a) setAssignment({ assigned_plan: a.assigned_plan as unknown as LifePlan, correct_value: a.correct_value ?? 0 });
-        }
+          if (a)
+            setAssignment({
+              assigned_plan: a.assigned_plan as unknown as LifePlan,
+              correct_value: a.correct_value ?? 0,
+            });
+        },
       )
       .subscribe();
     return () => {
@@ -148,7 +160,13 @@ function StudentRoom() {
           <div className="mt-6 space-y-3">
             <Label htmlFor="n">Your name</Label>
             <Input id="n" value={name} onChange={(e) => setName(e.target.value)} className="h-11" />
-            <Button variant="hero" size="lg" className="w-full" onClick={handleJoinExisting} disabled={joining}>
+            <Button
+              variant="hero"
+              size="lg"
+              className="w-full"
+              onClick={handleJoinExisting}
+              disabled={joining}
+            >
               Join
             </Button>
           </div>
@@ -160,7 +178,9 @@ function StudentRoom() {
   return (
     <main className="mx-auto min-h-screen max-w-2xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
-        <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Home</Link>
+        <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
+          ← Home
+        </Link>
         <PhaseBadge phase={phase} />
       </div>
 
@@ -207,7 +227,9 @@ function StudentBody({
       <Card className="p-8 text-center">
         <div className="mx-auto mb-4 h-12 w-12 animate-pulse-glow rounded-full bg-[image:var(--gradient-hero)]" />
         <h2 className="text-lg font-semibold">You're in!</h2>
-        <p className="mt-1 text-sm text-muted-foreground">Waiting for your teacher to start the simulation…</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Waiting for your teacher to start the simulation…
+        </p>
       </Card>
     );
   }
@@ -221,7 +243,11 @@ function StudentBody({
     );
   }
 
-  if (phase === PHASES.PHASE_1_RESULTS || phase === PHASES.PHASE_2_RESULTS || phase === PHASES.PHASE_3_RESULTS) {
+  if (
+    phase === PHASES.PHASE_1_RESULTS ||
+    phase === PHASES.PHASE_2_RESULTS ||
+    phase === PHASES.PHASE_3_RESULTS
+  ) {
     return (
       <Card className="p-8 text-center">
         <h2 className="text-lg font-semibold">Look at the class screen 👀</h2>
@@ -276,7 +302,9 @@ function StudentBody({
 
   return (
     <Card className="p-8 text-center">
-      <p className="text-sm text-muted-foreground">Hang tight — your teacher is moving things along.</p>
+      <p className="text-sm text-muted-foreground">
+        Hang tight — your teacher is moving things along.
+      </p>
     </Card>
   );
 }
@@ -285,28 +313,40 @@ function AssignmentCard({ plan }: { plan: LifePlan }) {
   return (
     <Card className="overflow-hidden p-0">
       <div className="bg-[image:var(--gradient-hero)] p-6 text-primary-foreground">
-        <h2 className="text-sm font-medium uppercase tracking-wider opacity-90">Your shuffled life</h2>
+        <h2 className="text-sm font-medium uppercase tracking-wider opacity-90">
+          Your shuffled life
+        </h2>
         <p className="mt-1 text-2xl font-bold">{plan.phase1.occupation}</p>
         <p className="text-sm opacity-90">living in {plan.phase1.city}</p>
       </div>
       <div className="grid gap-4 p-6 sm:grid-cols-3">
-        <Section title="Early career (18→50)" rows={[
-          ["Monthly invest", `$${plan.phase1.monthly}/mo`],
-          ["Return", `${plan.phase1.rate}%/yr`],
-        ]} />
-        <Section title="Hold (50→65)" rows={[
-          ["Vehicle", plan.phase2.vehicle],
-          ["Return", `${plan.phase2.rate}%/yr`],
-          ["Extra", `$${plan.phase2.extra}/mo`],
-        ]} />
-        <Section title="Retirement (65→80)" rows={[
-          ["Lifestyle", plan.phase3.lifestyle],
-          ["Withdraw", `$${plan.phase3.withdraw}/mo`],
-          ["Return", `${plan.phase3.rate}%/yr`],
-        ]} />
+        <Section
+          title="Early career (18→50)"
+          rows={[
+            ["Monthly invest", `$${plan.phase1.monthly}/mo`],
+            ["Return", `${plan.phase1.rate}%/yr`],
+          ]}
+        />
+        <Section
+          title="Hold (50→65)"
+          rows={[
+            ["Vehicle", plan.phase2.vehicle],
+            ["Return", `${plan.phase2.rate}%/yr`],
+            ["Extra", `$${plan.phase2.extra}/mo`],
+          ]}
+        />
+        <Section
+          title="Retirement (65→80)"
+          rows={[
+            ["Lifestyle", plan.phase3.lifestyle],
+            ["Withdraw", `$${plan.phase3.withdraw}/mo`],
+            ["Return", `${plan.phase3.rate}%/yr`],
+          ]}
+        />
       </div>
       <div className="border-t bg-muted/40 p-4 text-center text-xs text-muted-foreground">
-        Get ready — when the calculation phase begins you'll need to compute the final balance at age 80.
+        Get ready — when the calculation phase begins you'll need to compute the final balance at
+        age 80.
       </div>
     </Card>
   );
@@ -315,7 +355,9 @@ function AssignmentCard({ plan }: { plan: LifePlan }) {
 function Section({ title, rows }: { title: string; rows: [string, string][] }) {
   return (
     <div>
-      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h3>
+      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        {title}
+      </h3>
       <dl className="space-y-1 text-sm">
         {rows.map(([k, v]) => (
           <div key={k} className="flex justify-between gap-2">
@@ -369,7 +411,7 @@ function CalculationCard({
         attempts: newAttempts,
         updated_at: new Date().toISOString(),
       },
-      { onConflict: "participant_id" }
+      { onConflict: "participant_id" },
     );
     setBusy(false);
     if (error) toast.error("Could not submit");
@@ -379,15 +421,22 @@ function CalculationCard({
     <Card className="p-8">
       <h2 className="text-xl font-semibold">Compute the final balance at age 80</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Use compound interest across all three phases of your shuffled life. Within 0.1% counts as correct.
+        Use compound interest across all three phases of your shuffled life. Within 0.1% counts as
+        correct.
       </p>
 
       <details className="mt-4 rounded-lg bg-muted/50 p-3 text-sm">
         <summary className="cursor-pointer font-medium">Formula reminder</summary>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
           <li>Phase 1: monthly contributions for 25 years compounding at the early-career rate</li>
-          <li>Phase 2: that lump sum holds for 15 years (+ optional extra contributions) at the hold rate</li>
-          <li>Phase 3: withdraw monthly for 15 years while remaining balance still earns the retirement rate</li>
+          <li>
+            Phase 2: that lump sum holds for 15 years (+ optional extra contributions) at the hold
+            rate
+          </li>
+          <li>
+            Phase 3: withdraw monthly for 15 years while remaining balance still earns the
+            retirement rate
+          </li>
         </ul>
       </details>
 
@@ -420,15 +469,15 @@ function CalculationCard({
             feedback === "correct"
               ? "bg-success/15 [color:oklch(0.35_0.12_145)]"
               : feedback === "high"
-              ? "bg-warning/20 [color:oklch(0.35_0.12_60)]"
-              : "bg-accent/15 [color:oklch(0.35_0.15_30)]"
+                ? "bg-warning/20 [color:oklch(0.35_0.12_60)]"
+                : "bg-accent/15 [color:oklch(0.35_0.15_30)]"
           }`}
         >
           {feedback === "correct"
             ? `🎯 Correct! ${formatCurrency(trueAnswer)}`
             : feedback === "high"
-            ? "📈 Too high — try lower"
-            : "📉 Too low — try higher"}
+              ? "📈 Too high — try lower"
+              : "📉 Too low — try higher"}
           <div className="mt-1 text-xs opacity-70">Attempt #{attempts}</div>
         </div>
       )}

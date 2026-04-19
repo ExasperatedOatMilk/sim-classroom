@@ -17,7 +17,11 @@ export type PhaseValue = (typeof PHASES)[keyof typeof PHASES];
 
 export const PHASE_META: Record<
   number,
-  { title: string; subtitle: string; kind: "lobby" | "input" | "results" | "assignment" | "calc" | "done" }
+  {
+    title: string;
+    subtitle: string;
+    kind: "lobby" | "input" | "results" | "assignment" | "calc" | "done";
+  }
 > = {
   0: { title: "Lobby", subtitle: "Waiting for everyone to join", kind: "lobby" },
   1: { title: "Phase 1 — Early Career", subtitle: "Ages 18–25 → 40–50", kind: "input" },
@@ -26,7 +30,11 @@ export const PHASE_META: Record<
   4: { title: "Phase 2 — Class Distribution", subtitle: "Ages 40–50 → 60–65", kind: "results" },
   5: { title: "Phase 3 — Retirement Stage", subtitle: "Ages 60–65 → 80", kind: "input" },
   6: { title: "Phase 3 — Class Distribution", subtitle: "Ages 60–65 → 80", kind: "results" },
-  7: { title: "Your Shuffled Life Plan", subtitle: "A randomized destiny awaits", kind: "assignment" },
+  7: {
+    title: "Your Shuffled Life Plan",
+    subtitle: "A randomized destiny awaits",
+    kind: "assignment",
+  },
   8: { title: "Calculate Your Outcome", subtitle: "Compute the final value", kind: "calc" },
   9: { title: "Class Reveal", subtitle: "How did everyone fare?", kind: "done" },
 };
@@ -44,22 +52,85 @@ export interface FieldDef {
 }
 
 export const PHASE_1_FIELDS: FieldDef[] = [
-  { key: "occupation", label: "Your occupation", type: "text", placeholder: "e.g. Software engineer" },
+  {
+    key: "occupation",
+    label: "Your occupation",
+    type: "text",
+    placeholder: "e.g. Software engineer",
+  },
   { key: "city", label: "City you live in", type: "text", placeholder: "e.g. Lisbon" },
-  { key: "monthly", label: "Monthly investment", type: "number", min: 0, max: 100000, step: 50, suffix: "$/mo" },
-  { key: "rate", label: "Expected annual return", type: "number", min: 0, max: 30, step: 0.1, suffix: "%/yr" },
+  {
+    key: "monthly",
+    label: "Monthly investment",
+    type: "number",
+    min: 0,
+    max: 100000,
+    step: 50,
+    suffix: "$/mo",
+  },
+  {
+    key: "rate",
+    label: "Expected annual return",
+    type: "number",
+    min: 0,
+    max: 30,
+    step: 0.1,
+    suffix: "%/yr",
+  },
 ];
 
 export const PHASE_2_FIELDS: FieldDef[] = [
-  { key: "vehicle", label: "What you hold savings in", type: "text", placeholder: "e.g. Index funds" },
-  { key: "rate", label: "Expected annual return while holding", type: "number", min: 0, max: 25, step: 0.1, suffix: "%/yr" },
-  { key: "extra", label: "Extra contribution (optional)", type: "number", min: 0, max: 100000, step: 50, suffix: "$/mo" },
+  {
+    key: "vehicle",
+    label: "What you hold savings in",
+    type: "text",
+    placeholder: "e.g. Index funds",
+  },
+  {
+    key: "rate",
+    label: "Expected annual return while holding",
+    type: "number",
+    min: 0,
+    max: 25,
+    step: 0.1,
+    suffix: "%/yr",
+  },
+  {
+    key: "extra",
+    label: "Extra contribution (optional)",
+    type: "number",
+    min: 0,
+    max: 100000,
+    step: 50,
+    suffix: "$/mo",
+  },
 ];
 
 export const PHASE_3_FIELDS: FieldDef[] = [
-  { key: "lifestyle", label: "Retirement lifestyle", type: "text", placeholder: "e.g. Travel a lot" },
-  { key: "withdraw", label: "Monthly withdrawal", type: "number", min: 0, max: 100000, step: 100, suffix: "$/mo" },
-  { key: "rate", label: "Conservative return on remaining", type: "number", min: 0, max: 15, step: 0.1, suffix: "%/yr" },
+  {
+    key: "lifestyle",
+    label: "Retirement lifestyle",
+    type: "text",
+    placeholder: "e.g. Travel a lot",
+  },
+  {
+    key: "withdraw",
+    label: "Monthly withdrawal",
+    type: "number",
+    min: 0,
+    max: 100000,
+    step: 100,
+    suffix: "$/mo",
+  },
+  {
+    key: "rate",
+    label: "Conservative return on remaining",
+    type: "number",
+    min: 0,
+    max: 15,
+    step: 0.1,
+    suffix: "%/yr",
+  },
 ];
 
 export function fieldsForPhase(inputPhase: number): FieldDef[] {
@@ -107,7 +178,9 @@ function fvLump(principal: number, annualRatePct: number, years: number): number
 
 export function computePlan(plan: LifePlan): number {
   const p1End = fvAnnuity(plan.phase1.monthly, plan.phase1.rate, YEARS_P1);
-  const p2End = fvLump(p1End, plan.phase2.rate, YEARS_P2) + fvAnnuity(plan.phase2.extra, plan.phase2.rate, YEARS_P2);
+  const p2End =
+    fvLump(p1End, plan.phase2.rate, YEARS_P2) +
+    fvAnnuity(plan.phase2.extra, plan.phase2.rate, YEARS_P2);
 
   // Phase 3: each month we earn return then withdraw
   const r3 = plan.phase3.rate / 100 / 12;
@@ -154,7 +227,9 @@ function shuffledIndices(n: number, seed: number, forbidden: number): number[] {
   return arr;
 }
 
-export function buildAssignments(answers: ParticipantAnswers[]): { participantId: string; plan: LifePlan }[] {
+export function buildAssignments(
+  answers: ParticipantAnswers[],
+): { participantId: string; plan: LifePlan }[] {
   const n = answers.length;
   if (n === 0) return [];
 
@@ -172,7 +247,8 @@ export function buildAssignments(answers: ParticipantAnswers[]): { participantId
     const p2Idx = pickFor(i, 2);
     const p3Idx = pickFor(i, 3);
     const plan: LifePlan = {
-      phase1: answers[p1Idx].phase1 ?? self.phase1 ?? { occupation: "—", city: "—", monthly: 0, rate: 0 },
+      phase1: answers[p1Idx].phase1 ??
+        self.phase1 ?? { occupation: "—", city: "—", monthly: 0, rate: 0 },
       phase2: answers[p2Idx].phase2 ?? self.phase2 ?? { vehicle: "—", rate: 0, extra: 0 },
       phase3: answers[p3Idx].phase3 ?? self.phase3 ?? { lifestyle: "—", withdraw: 0, rate: 0 },
     };
@@ -188,5 +264,9 @@ export function generateRoomCode(): string {
 }
 
 export function formatCurrency(n: number): string {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(n);
 }

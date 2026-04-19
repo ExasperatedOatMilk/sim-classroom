@@ -21,7 +21,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Classroom Life Simulation" },
       {
         property: "og:description",
-        content: "Host a room, students join with a code, and compute your shuffled life plan together.",
+        content:
+          "Host a room, students join with a code, and compute your shuffled life plan together.",
       },
     ],
   }),
@@ -57,7 +58,11 @@ function HomePage() {
           .select()
           .single();
         if (pErr) throw pErr;
-        setRoomSession(code, { participantId: participant.id, name: teacherName.trim(), role: "teacher" });
+        setRoomSession(code, {
+          participantId: participant.id,
+          name: teacherName.trim(),
+          role: "teacher",
+        });
         navigate({ to: "/teacher/$code", params: { code } });
         return;
       }
@@ -121,8 +126,8 @@ function HomePage() {
           Life Simulation
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          Plan three phases of a financial life — early career, mid-life hold, retirement —
-          then compute the outcome of a randomly shuffled destiny.
+          Plan three phases of a financial life — early career, mid-life hold, retirement — then
+          compute the outcome of a randomly shuffled destiny.
         </p>
       </header>
 
@@ -148,7 +153,13 @@ function HomePage() {
                 className="h-11"
               />
             </div>
-            <Button variant="hero" size="lg" className="w-full" onClick={handleCreate} disabled={busy}>
+            <Button
+              variant="hero"
+              size="lg"
+              className="w-full"
+              onClick={handleCreate}
+              disabled={busy}
+            >
               Create classroom
             </Button>
           </div>
@@ -186,7 +197,13 @@ function HomePage() {
                 className="h-11"
               />
             </div>
-            <Button variant="warm" size="lg" className="w-full" onClick={handleJoin} disabled={busy}>
+            <Button
+              variant="warm"
+              size="lg"
+              className="w-full"
+              onClick={handleJoin}
+              disabled={busy}
+            >
               Join classroom
             </Button>
           </div>

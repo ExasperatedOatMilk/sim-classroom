@@ -14,7 +14,197 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      assignments: {
+        Row: {
+          assigned_plan: Json
+          correct_value: number | null
+          created_at: string
+          id: string
+          participant_id: string
+          room_id: string
+        }
+        Insert: {
+          assigned_plan: Json
+          correct_value?: number | null
+          created_at?: string
+          id?: string
+          participant_id: string
+          room_id: string
+        }
+        Update: {
+          assigned_plan?: Json
+          correct_value?: number | null
+          created_at?: string
+          id?: string
+          participant_id?: string
+          room_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignments_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: true
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      final_submissions: {
+        Row: {
+          attempts: number
+          id: string
+          is_correct: boolean
+          participant_id: string
+          room_id: string
+          updated_at: string
+          user_value: number
+        }
+        Insert: {
+          attempts?: number
+          id?: string
+          is_correct?: boolean
+          participant_id: string
+          room_id: string
+          updated_at?: string
+          user_value: number
+        }
+        Update: {
+          attempts?: number
+          id?: string
+          is_correct?: boolean
+          participant_id?: string
+          room_id?: string
+          updated_at?: string
+          user_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "final_submissions_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: true
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "final_submissions_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      participants: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          role: string
+          room_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          role?: string
+          room_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          role?: string
+          room_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participants_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      responses: {
+        Row: {
+          answer: Json
+          created_at: string
+          id: string
+          participant_id: string
+          phase: number
+          room_id: string
+          submitted: boolean
+        }
+        Insert: {
+          answer: Json
+          created_at?: string
+          id?: string
+          participant_id: string
+          phase: number
+          room_id: string
+          submitted?: boolean
+        }
+        Update: {
+          answer?: Json
+          created_at?: string
+          id?: string
+          participant_id?: string
+          phase?: number
+          room_id?: string
+          submitted?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "responses_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "responses_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          phase: number
+          status: string
+          teacher_id: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          phase?: number
+          status?: string
+          teacher_id?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          phase?: number
+          status?: string
+          teacher_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
